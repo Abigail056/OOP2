@@ -1,143 +1,197 @@
 /*ASSIGNMENT 2:CAR RENTAL SYSTEM USING OBJECT-ORIENTED PROGRAMMING PRINCIPLES(JAVA)*/
-import java.util.Scanner;
-public class Rental_system {
+Name:Abigail Muthoni
+Adm no:BBIT-05-0019/2024
+Campus:TRC
+Git Username:Abigail056   
    
-    //prompting the user to enter his/her logins 
-   public static void main(String[] args) {
-     String username,password;
+import java.util.*;
 
-     Scanner input = new Scanner(System.in);
-     //entering username
-     System.out.println("Enter Username:");
-     username = input.nextLine();
-     //entering password
-     System.out.println("Enter Password");
-     password = input.nextLine();
+// Represents a car with an ID, model name, and availability status
+class Car {
+    private String carId;
+    private String model;
+    private boolean isAvailable;
 
-     //this is to tell the user to re-enter the name
-     String username1;
-      do {
-        System.out.println("Re-enter username:");
-        username1 = input.nextLine();
-        if (!username.equals(username1)) {
-          System.out.println("THE USERNAME DOESN'T MATCH!!");
+    public Car(String carId, String model) {
+        this.carId = carId;
+        this.model = model;
+        this.isAvailable = true;
+    }
+
+    public String getCarId() {
+        return carId;
+    }
+
+    public String getModel() {
+        return model;
+    }
+
+    public boolean isAvailable() {
+        return isAvailable;
+    }
+
+    public void rent() {
+        this.isAvailable = false;
+    }
+
+    public void returnCar() {
+        this.isAvailable = true;
+    }
+
+    public String toString() {
+        return carId + " - " + model + " (" + (isAvailable ? "Available" : "Rented") + ")";
+    }
+}
+
+// Represents a customer with an ID and name
+class Customer {
+    private String customerId;
+    private String name;
+
+    public Customer(String customerId, String name) {
+        this.customerId = customerId;
+        this.name = name;
+    }
+
+    public String getCustomerId() {
+        return customerId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String toString() {
+        return customerId + " - " + name;
+    }
+}
+
+// Core agency class that manages cars and customers
+class RentalAgency {
+    private List<Car> cars = new ArrayList<>();
+    private List<Customer> customers = new ArrayList<>();
+
+    public void addCar(Car car) {
+        cars.add(car);
+    }
+
+    public void addCustomer(Customer customer) {
+        customers.add(customer);
+    }
+
+    public void rentCar(String customerId, String carId) {
+        Customer customer = findCustomer(customerId);
+        Car car = findCar(carId);
+
+        if (customer == null) {
+            System.out.println("Customer not found.");
+            return;
         }
-      } while (!username.equals(username1));
-     //this is to tell the user to re-enter the password
-     String password1;
-      do {
-        System.out.println("Re-enter password:");
-        password1=input.nextLine();
-
-        if (!password.equals(password1)) {
-          System.out.println("THE PASSWORD DOESN'T MATCH!!");  
+        if (car == null) {
+            System.out.println("Car not found.");
+            return;
         }
-      } while (!password.equals(password1));
-
-     //this is to tell the user to re-enter the name
-     String username2;
-      do {
-        System.out.println("Re-enter username2:");
-        username2 =input.nextLine();
-
-        if (!username1.equals(username2)) {
-          System.out.println("THE USERNAME DOESN'T MATCH!!");  
+        if (!car.isAvailable()) {
+            System.out.println("Car is already rented.");
+            return;
         }
-      } while (!username1.equals(username2));
-     //this is to tell the user to re-enter the password
-     String password2;
-      do {
-        System.out.println("Re-enter password2:");
-        password2 =input.nextLine();
-        if (!password1.equals(password2)) {
-          System.out.println("THE PASSWORD DOESN'T MATCH!!");  
+
+        car.rent();
+        System.out.println(customer.getName() + " has rented " + car.getModel());
+    }
+
+    public void returnCar(String carId) {
+        Car car = findCar(carId);
+        if (car != null && !car.isAvailable()) {
+            car.returnCar();
+            System.out.println("Car returned: " + car.getModel());
+        } else {
+            System.out.println("Car not found or not rented.");
         }
-      } while (!password1.equals(password2));
+    }
 
-      //OUTPUTTING OUR CARS
-        System.out.println("AVAILABLE CARS AND PRICING");
+    public void listCars() {
+        for (Car car : cars) {
+            System.out.println(car);
+        }
+    }
 
-         String[][] cars_available/*[][] CAN ALSO BE USED HERE */ = {
-              {"Audi Q5", "70000"},
-              {"Volvo S60", "50000"},
-              {"Mazda CX5", "40000"},
-              {"Nissan GTR", "90000"},
-              {"Subaru Forester", "9000"}
-          };
-          for (int i = 0; i < cars_available.length; i++) {
-          System.out.println("Car:" +cars_available[i][0] +cars_available[i][1]);
-          }
-         //Prompting the user to enter his credentials
-         //name
-         System.out.println("Enter your name:");
-         String name =input.nextLine();
-         //car to rent
-         System.out.println("Car to rent:");
-         String car = input.nextLine();
+    public void listCustomers() {
+        for (Customer customer : customers) {
+            System.out.println(customer);
+        }
+    }
 
-         //CHARGES ACCORDING TO THE DAYS TAKEN 
-           System.out.println("CHARGES ACCORDING TO THE DAYS TAKEN ");
-           boolean carFound = false;
-           int days;
-           //days to rent
-        
-         do {//this is to prompt the user to re-enter the days if he/she enters less than the required days
-            System.out.println("Enter Renting days:");
-            days = input.nextInt();
-            input.nextLine();
-            if (days<2) {
-             System.out.println("Less RENTING DAYS!! SORRY!!");   
-            } 
-         } while (days<2);
-          
-           
-          /*  The Integer.parseInt() method in Java is used to 
-           convert a string into an integer. Since user inputs
-            and data stored in arrays are often in the form of
-             strings, you need parseInt()  
-           to turn them into numerical values for calculations.*/
-           int total=0;
-           
-           for (int i = 0; i < cars_available.length; i++) {
-            if (cars_available[i][0].equalsIgnoreCase(car)) {
-                int pricePerDay = Integer.parseInt(cars_available[i][1]);
-                total = pricePerDay * days;
-                System.out.println("Total charges for " + car + " for " + days + " days: $" + total);
-                carFound = true;
-                break;
+    private Car findCar(String id) {
+        for (Car car : cars) {
+            if (car.getCarId().equals(id)) return car;
+        }
+        return null;
+    }
+
+    private Customer findCustomer(String id) {
+        for (Customer customer : customers) {
+            if (customer.getCustomerId().equals(id)) return customer;
+        }
+        return null;
+    }
+}
+
+// Console-based UI to interact with the rental system
+public class CarRentalSystem {
+    public static void main(String[] args) {
+        RentalAgency agency = new RentalAgency();
+        Scanner scanner = new Scanner(System.in);
+
+        // Sample data
+        agency.addCar(new Car("C1", "Toyota Corolla"));
+        agency.addCar(new Car("C2", "Honda Civic"));
+        agency.addCustomer(new Customer("CU1", "Alice"));
+        agency.addCustomer(new Customer("CU2", "Bob"));
+
+        boolean running = true;
+        while (running) {
+            System.out.println("\n1. List Cars\n2. List Customers\n3. Rent Car\n4. Return Car\n5. Exit");
+            System.out.print("Choose an option: ");
+
+            // Check if the user entered an integer
+            if (!scanner.hasNextInt()) {
+                System.out.println("Please enter a valid number.");
+                scanner.next(); // consume invalid input
+                continue;
+            }
+
+            int option = scanner.nextInt();
+            scanner.nextLine(); // consume newline
+
+            switch (option) {
+                case 1:
+                    agency.listCars();
+                    break;
+                case 2:
+                    agency.listCustomers();
+                    break;
+                case 3:
+                    System.out.print("Enter Customer ID: ");
+                    String customerId = scanner.nextLine();
+                    System.out.print("Enter Car ID: ");
+                    String carId = scanner.nextLine();
+                    agency.rentCar(customerId, carId);
+                    break;
+                case 4:
+                    System.out.print("Enter Car ID: ");
+                    String returnId = scanner.nextLine();
+                    agency.returnCar(returnId);
+                    break;
+                case 5:
+                    running = false;
+                    break;
+                default:
+                    System.out.println("Invalid option.");
             }
         }
-        //the control programm if is taken out of the for loop to avoid it from looping
-         if (!carFound) {
-        System.out.println("Car not found. Please check the name exactly as shown.");
-         }
-         
-         // CLIENT'S DATA-a collateral factor.
 
-         
-          String nationalID;
-          do {
-            System.out.println("Enter nationalID:");
-            nationalID =input.nextLine();
-
-            if (nationalID.length()<10) {
-                System.out.println("INVALID INPUT!!");
-            }
-         } while (nationalID.length()<10);
-            
-          //RESULT
-              System.out.println("RENTAL SUMMARY");
-              System.out.println("Enter Username:" +username);
-              System.out.println("Enter password:" +password);
-             
-              //output customers detail
-              System.out.println("Name:" +name);
-              System.out.println("Car rented:" +car);
-              System.out.println("Days:" +days);
-              System.out.println("Total: &:" + total);
-              System.out.println("NationalID:" +nationalID);
-  
-        }
-             
+        scanner.close();
+    }
 }
 
